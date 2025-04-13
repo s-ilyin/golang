@@ -11,7 +11,7 @@ import (
 func ToLittleEndian(number uint32) uint32 {
 
 	// сбрасываем и складываем
-	return ((0xFF & number >> 0) << 24) |
+	return ((0xFF & (number >> 0)) << 24) |
 		((0xFF & (number >> 8)) << 16) |
 		((0xFF & (number >> 16)) << 8) |
 		((0xFF & (number >> 24)) << 0) // need to implement
