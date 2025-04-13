@@ -10,11 +10,11 @@ import (
 
 func ToLittleEndian(number uint32) uint32 {
 
-	// сдвигам, получаем ячейки байт
-	var b1, b2, b3, b4 = number >> 0, number >> 8, number >> 16, number >> 24
-
 	// сбрасываем и складываем
-	return ((0xFF & b1) << 24) | ((0xFF & b2) << 16) | ((0xFF & b3) << 8) | ((0xFF & b4) << 0) // need to implement
+	return ((0xFF & number >> 0) << 24) |
+		((0xFF & (number >> 8)) << 16) |
+		((0xFF & (number >> 16)) << 8) |
+		((0xFF & (number >> 24)) << 0) // need to implement
 }
 
 func TestСonversion(t *testing.T) {
