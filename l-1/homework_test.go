@@ -18,9 +18,6 @@ func ToLittleEndian(number uint32) uint32 {
 }
 
 func TestСonversion(t *testing.T) {
-	// binary.BigEndian.Uint32()
-	// binary.LittleEndian.Uint32()
-
 	tests := map[string]struct {
 		number uint32
 		result uint32
