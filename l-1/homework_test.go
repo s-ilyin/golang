@@ -9,10 +9,18 @@ import (
 // go test -v homework_test.go
 
 func ToLittleEndian(number uint32) uint32 {
-	return 0 // need to implement
+
+	// сдвигам, получаем ячейки байт
+	var b1, b2, b3, b4 = number >> 0, number >> 8, number >> 16, number >> 24
+
+	// сбрасываем и складываем
+	return ((0xFF & b1) << 24) | ((0xFF & b2) << 16) | ((0xFF & b3) << 8) | ((0xFF & b4) << 0) // need to implement
 }
 
 func TestСonversion(t *testing.T) {
+	// binary.BigEndian.Uint32()
+	// binary.LittleEndian.Uint32()
+
 	tests := map[string]struct {
 		number uint32
 		result uint32
@@ -36,6 +44,10 @@ func TestСonversion(t *testing.T) {
 		"test case #5": {
 			number: 0x01020304,
 			result: 0x04030201,
+		},
+		"test case #6": {
+			number: 0x000000FF,
+			result: 0xFF000000,
 		},
 	}
 
