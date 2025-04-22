@@ -9,7 +9,12 @@ import (
 // go test -v homework_test.go
 
 func ToLittleEndian(number uint32) uint32 {
-	return 0 // need to implement
+
+	// сбрасываем и складываем
+	return ((0xFF & (number >> 0)) << 24) |
+		((0xFF & (number >> 8)) << 16) |
+		((0xFF & (number >> 16)) << 8) |
+		((0xFF & (number >> 24)) << 0) // need to implement
 }
 
 func TestСonversion(t *testing.T) {
@@ -36,6 +41,10 @@ func TestСonversion(t *testing.T) {
 		"test case #5": {
 			number: 0x01020304,
 			result: 0x04030201,
+		},
+		"test case #6": {
+			number: 0x000000FF,
+			result: 0xFF000000,
 		},
 	}
 
