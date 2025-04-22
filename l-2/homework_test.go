@@ -26,7 +26,7 @@ func NewCircularQueue(size int) CircularQueue {
 
 type CircularQueue struct {
 	values     []int
-	head, tail int // head - read idx, head - write idx
+	head, tail int // head - read idx, tail - write idx
 }
 
 func (q *CircularQueue) Full() bool {
