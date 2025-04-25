@@ -25,10 +25,10 @@ func NewCOWBuffer(data []byte) COWBuffer {
 	if data == nil {
 		data = make([]byte, 0, 2<<6)
 	}
-	ref := new(int)
-	*ref += 1
+	refs := new(int)
+	*refs += 1
 
-	return COWBuffer{data: data, refs: ref, n: len(data)}
+	return COWBuffer{data: data, refs: refs, n: len(data)}
 }
 
 var ErrRefsNil = errors.New("refs == nil")
@@ -47,18 +47,19 @@ func (b *COWBuffer) Clone() COWBuffer {
 	}
 
 	*b.refs += 1
-	return COWBuffer{
+	buf := COWBuffer{
 		refs: b.refs,
 		data: b.data,
 		n:    b.n,
 	}
+	return buf
 }
 
 func (b *COWBuffer) Close() {
 	if b.close {
 		return
 	}
-	
+
 	if !b.close {
 		b.close = true
 	}
@@ -68,11 +69,7 @@ func (b *COWBuffer) Close() {
 	}
 	b.n = 0
 	b.data = nil
-
 	*b.refs -= 1
-	if *b.refs == 0 {
-		b.refs = nil
-	}
 }
 
 func (b *COWBuffer) Update(index int, value byte) bool {
@@ -110,7 +107,6 @@ func TestCOWBuffer(t *testing.T) {
 
 	copy1 := buffer.Clone()
 	copy2 := buffer.Clone()
-	//fmt.Println(buffer.data, copy1.data, buffer.refs == nil, copy1.refs == nil)
 
 	assert.Equal(t, unsafe.SliceData(data), unsafe.SliceData(buffer.data))
 	assert.Equal(t, unsafe.SliceData(buffer.data), unsafe.SliceData(copy1.data))
