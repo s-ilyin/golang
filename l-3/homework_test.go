@@ -35,9 +35,10 @@ var ErrRefsNil = errors.New("refs == nil")
 var ErrBufNil = errors.New("buf == nil")
 
 type COWBuffer struct {
-	data []byte
-	refs *int
-	n    int
+	data  []byte
+	refs  *int
+	n     int
+	close bool
 }
 
 func (b *COWBuffer) Clone() COWBuffer {
@@ -54,14 +55,22 @@ func (b *COWBuffer) Clone() COWBuffer {
 }
 
 func (b *COWBuffer) Close() {
+	if b.close {
+		return
+	}
+	
+	if !b.close {
+		b.close = true
+	}
+
 	if b.refs == nil {
 		panic(ErrRefsNil)
 	}
-
 	b.n = 0
+	b.data = nil
+
 	*b.refs -= 1
 	if *b.refs == 0 {
-		b.data = nil
 		b.refs = nil
 	}
 }
@@ -101,6 +110,7 @@ func TestCOWBuffer(t *testing.T) {
 
 	copy1 := buffer.Clone()
 	copy2 := buffer.Clone()
+	//fmt.Println(buffer.data, copy1.data, buffer.refs == nil, copy1.refs == nil)
 
 	assert.Equal(t, unsafe.SliceData(data), unsafe.SliceData(buffer.data))
 	assert.Equal(t, unsafe.SliceData(buffer.data), unsafe.SliceData(copy1.data))
