@@ -32,6 +32,7 @@ func NewCOWBuffer(data []byte) COWBuffer {
 }
 
 var ErrRefsNil = errors.New("refs == nil")
+var ErrBufNil = errors.New("buf == nil")
 
 type COWBuffer struct {
 	data []byte
@@ -57,12 +58,16 @@ func (b *COWBuffer) Close() {
 		panic(ErrRefsNil)
 	}
 	b.data = nil
+	b.n = 0
 	*b.refs -= 1
 }
 
 func (b *COWBuffer) Update(index int, value byte) bool {
 	if b.refs == nil {
 		panic(ErrRefsNil)
+	}
+	if b.data == nil {
+		panic(ErrBufNil)
 	}
 	if index < 0 || index > len(b.data)-1 {
 		return false
@@ -75,7 +80,6 @@ func (b *COWBuffer) Update(index int, value byte) bool {
 		buf := make([]byte, len(b.data))
 		copy(buf, b.data)
 		b.data = buf
-		
 	}
 	b.data[index] = value
 
