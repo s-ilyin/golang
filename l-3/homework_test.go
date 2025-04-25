@@ -57,9 +57,13 @@ func (b *COWBuffer) Close() {
 	if b.refs == nil {
 		panic(ErrRefsNil)
 	}
-	b.data = nil
+
 	b.n = 0
 	*b.refs -= 1
+	if *b.refs == 0 {
+		b.data = nil
+		b.refs = nil
+	}
 }
 
 func (b *COWBuffer) Update(index int, value byte) bool {
