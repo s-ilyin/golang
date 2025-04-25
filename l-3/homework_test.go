@@ -47,12 +47,11 @@ func (b *COWBuffer) Clone() COWBuffer {
 	}
 
 	*b.refs += 1
-	buf := COWBuffer{
+	return COWBuffer{
 		refs: b.refs,
 		data: b.data,
 		n:    b.n,
 	}
-	return buf
 }
 
 func (b *COWBuffer) Close() {
