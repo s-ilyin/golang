@@ -9,7 +9,7 @@ import (
 
 func Map(data []int, action func(v int) int) []int {
 	if len(data) == 0 {
-		return nil
+		return data
 	}
 	result := make([]int, len(data))
 	for i := range data {
@@ -21,7 +21,7 @@ func Map(data []int, action func(v int) int) []int {
 
 func Filter(data []int, action func(v int) bool) []int {
 	if len(data) == 0 {
-		return nil
+		return data
 	}
 	result := make([]int, 0)
 	for i := range data {
