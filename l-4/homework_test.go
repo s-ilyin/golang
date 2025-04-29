@@ -41,78 +41,16 @@ type node struct {
 	right *node
 }
 
-// Insert добавить элемент в словарь
 func (m *OrderedMap) Insert(key, value int) {
+	m.root = insert(m.root, key, value)
+}
+
+func (m *OrderedMap) Erase(key int) {
 	if m.root == nil {
-		m.root = &node{k: key, v: value, left: nil, right: nil}
 		return
 	}
-	m.root.insert(key, value)
-}
 
-func (n *node) contains(key int) bool {
-	if n == nil {
-		return false
-	}
-	if n.k == key {
-		return true
-	}
-
-	if key < n.k {
-		if n.left == nil {
-			return false
-		}
-
-		return n.left.contains(key)
-	}
-
-	if n.right == nil {
-		return false
-	}
-	return n.right.contains(key)
-}
-
-func (n *node) insert(key, value int) {
-	if n.k == key {
-		n.v = value
-		return
-	}
-	if key < n.k {
-		if n.left == nil {
-			n.left = &node{k: key, v: value, left: nil, right: nil}
-			return
-		}
-
-		n.left.insert(key, value)
-		return
-	}
-	if n.right == nil {
-		n.right = &node{k: key, v: value, left: nil, right: nil}
-		return
-	}
-	n.right.insert(key, value)
-}
-
-func (m *OrderedMap) Size() int {
-	size := 0
-	m.root.inorder(func(_, _ int) {
-		size += 1
-	})
-
-	return size
-}
-
-func (n *node) inorder(action func(int, int)) {
-	if n == nil {
-		return
-	}
-	n.left.inorder(action)
-	action(n.k, n.v)
-	n.right.inorder(action)
-}
-
-func (m *OrderedMap) ForEach(action func(k, v int)) {
-	m.root.inorder(action)
+	erase(m.root, key)
 }
 
 func (m *OrderedMap) Contains(key int) bool {
@@ -120,7 +58,62 @@ func (m *OrderedMap) Contains(key int) bool {
 		return false
 	}
 
-	return m.root.contains(key)
+	return contains(m.root, key)
+}
+
+func (m *OrderedMap) Size() int {
+	size := 0
+	inorder(m.root, func(_, _ int) {
+		size += 1
+	})
+
+	return size
+}
+
+func (m *OrderedMap) ForEach(action func(k, v int)) {
+	inorder(m.root, action)
+}
+
+func contains(n *node, k int) bool {
+	if n == nil {
+		return false
+	}
+	if n.k == k {
+		return true
+	}
+
+	if k < n.k {
+		return contains(n.left, k)
+	} else {
+		return contains(n.right, k)
+	}
+}
+
+func insert(n *node, k, v int) *node {
+	if n == nil {
+		return &node{k: k, v: v, left: nil, right: nil}
+	}
+	if n.k == k {
+		n.v = v
+	}
+
+	if k < n.k {
+		n.left = insert(n.left, k, v)
+	}
+	if k > n.k {
+		n.right = insert(n.right, k, v)
+	}
+
+	return n
+}
+
+func inorder(n *node, action func(int, int)) {
+	if n == nil {
+		return
+	}
+	inorder(n.left, action)
+	action(n.k, n.v)
+	inorder(n.right, action)
 }
 
 func erase(n *node, k int) *node {
@@ -152,14 +145,6 @@ func erase(n *node, k int) *node {
 	n.right = erase(n.right, n.k)
 
 	return n
-}
-
-func (m *OrderedMap) Erase(key int) {
-	if m.root == nil {
-		return
-	}
-
-	erase(m.root, key)
 }
 
 func TestCircularQueue(t *testing.T) {
